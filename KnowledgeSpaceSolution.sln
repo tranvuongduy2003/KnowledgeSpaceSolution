@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeSpace.BackendServer", "src\KnowledgeSpace.BackendServer\KnowledgeSpace.BackendServer.csproj", "{E2432CA2-8FEA-4F24-B5F2-44D0CE9ABECC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KnowledgeSpace.BackendServer", "src\KnowledgeSpace.BackendServer\KnowledgeSpace.BackendServer.csproj", "{E2432CA2-8FEA-4F24-B5F2-44D0CE9ABECC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeSpace.WebPortal", "src\KnowledgeSpace.WebPortal\KnowledgeSpace.WebPortal.csproj", "{79BF647B-6E51-4F94-B3BD-2467C985F312}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KnowledgeSpace.WebPortal", "src\KnowledgeSpace.WebPortal\KnowledgeSpace.WebPortal.csproj", "{79BF647B-6E51-4F94-B3BD-2467C985F312}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KnowledgeSpace.ViewModels", "src\KnowledgeSpace.ViewModels\KnowledgeSpace.ViewModels.csproj", "{E221B785-1005-4A8E-BE7F-238C35BBADB8}"
 EndProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4ACE1A61-3935-468B-A87E-8B5D72EAE2E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeSpace.BackendServer.UnitTest", "test\KnowledgeSpace.BackendServer.UnitTest\KnowledgeSpace.BackendServer.UnitTest.csproj", "{C3E2F95D-B71D-4188-B971-C8BBC4E54988}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KnowledgeSpace.BackendServer.UnitTest", "test\KnowledgeSpace.BackendServer.UnitTest\KnowledgeSpace.BackendServer.UnitTest.csproj", "{C3E2F95D-B71D-4188-B971-C8BBC4E54988}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
