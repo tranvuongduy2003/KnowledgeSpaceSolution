@@ -2,9 +2,9 @@
 
 namespace KnowledgeSpace.ViewModels.Systems
 {
-    public class RoleVmValidator : AbstractValidator<RoleVm>
+    public class RoleCreateRequestValidator : AbstractValidator<RoleCreateRequest>
     {
-        public RoleVmValidator()
+        public RoleCreateRequestValidator()
         {
             RuleFor(x => x.Id).NotEmpty().WithMessage("Id value is required").MaximumLength(50).WithMessage("Role id cannot over limit 50 characters");
             RuleFor(x => x.Name).NotEmpty().WithMessage("Role name is required");
