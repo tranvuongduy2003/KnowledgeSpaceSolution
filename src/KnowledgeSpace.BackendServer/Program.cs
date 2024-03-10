@@ -47,6 +47,7 @@ builder.Services.AddIdentityServer(options =>
 .AddInMemoryIdentityResources(Config.Ids)
 .AddInMemoryApiScopes(Config.ApiScopes)
 .AddAspNetIdentity<User>()
+.AddProfileService<IdentityProfileService>()
 .AddDeveloperSigningCredential();
 
 builder.Services.Configure<IdentityOptions>(options =>
