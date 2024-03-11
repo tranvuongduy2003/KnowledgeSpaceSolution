@@ -28,6 +28,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         #region KnowledgeBases
         [HttpPost]
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostKnowledgeBase([FromForm] KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = new KnowledgeBase()
@@ -72,7 +73,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
         }
 
@@ -130,7 +131,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
             if (knowledgeBase == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             var knowledgeBaseVm = new KnowledgeBaseVm()
             {
@@ -158,11 +159,12 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.CONTENT_KNOWLEDGEBASE, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutKnowledgeBase(int id, [FromBody] KnowledgeBaseCreateRequest request)
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
             if (knowledgeBase == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             knowledgeBase.CategoryId = request.CategoryId;
             knowledgeBase.Title = request.Title;
@@ -190,7 +192,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
 
         [HttpDelete("{id}")]
@@ -199,7 +201,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(id);
             if (knowledgeBase == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             _context.KnowledgeBases.Remove(knowledgeBase);
             var result = await _context.SaveChangesAsync();
@@ -229,7 +231,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 };
                 return Ok(knowledgeBasevm);
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
 
         private async Task ProcessLabel(KnowledgeBaseCreateRequest request, KnowledgeBase knowledgeBase)
@@ -332,7 +334,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var comment = await _context.Comments.FindAsync(commentId);
             if (comment == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             var commentVm = new CommentVm()
             {
@@ -348,6 +350,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPost("{knowledgeBaseId}/comments")]
         [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostComment(int knowledgeBaseId, [FromBody] CommentCreateRequest request)
         {
             var comment = new Comment()
@@ -361,7 +364,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfComments = knowledgeBase.NumberOfComments.GetValueOrDefault(0) + 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -374,17 +377,18 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
         }
 
         [HttpPut("{knowledgeBaseId}/comments/{commentId}")]
         [ClaimRequirement(FunctionCode.CONTENT_COMMENT, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutComment(int knowledgeBaseId, int commentId, [FromBody] CommentCreateRequest request)
         {
             var comment = await _context.Comments.FindAsync(commentId);
             if (comment == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             if (comment.OwnwerUserId != User.Identity.Name)
                 return Forbid();
@@ -398,7 +402,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
 
         [HttpDelete("{knowledgeBaseId}/comments/{commentId}")]
@@ -407,14 +411,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var comment = await _context.Comments.FindAsync(commentId);
             if (comment == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             _context.Comments.Remove(comment);
 
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfComments = knowledgeBase.NumberOfComments.GetValueOrDefault(0) - 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -434,7 +438,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 };
                 return Ok(commentVm);
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
         #endregion
 
@@ -456,12 +460,13 @@ namespace KnowledgeSpace.BackendServer.Controllers
         }
 
         [HttpPost("{knowledgeBaseId}/votes")]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostVote(int knowledgeBaseId, [FromBody] VoteCreateRequest request)
         {
             var vote = await _context.Votes.FindAsync(knowledgeBaseId, request.UserId);
             if (vote != null)
             {
-                return BadRequest("This user has been voted for this KB");
+                return BadRequest(new ApiBadRequestResponse("This user has been voted for this KB"));
             }
 
             vote = new Vote()
@@ -474,7 +479,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfVotes = knowledgeBase.NumberOfVotes.GetValueOrDefault(0) + 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -487,7 +492,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
         }
 
@@ -497,7 +502,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var vote = await _context.Votes.FindAsync(knowledgeBaseId, userId);
             if (vote == null)
             {
-                return NotFound("This user has not been voted for this KB");
+                return NotFound(new ApiNotFoundResponse("This user has not been voted for this KB"));
             }
 
             _context.Votes.Remove(vote);
@@ -505,7 +510,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfVotes = knowledgeBase.NumberOfVotes.GetValueOrDefault(0) - 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -515,7 +520,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
         #endregion
 
@@ -578,7 +583,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var report = await _context.Reports.FindAsync(reportId);
             if (report == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             var reportVm = new ReportVm()
             {
@@ -595,6 +600,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPost("{knowledgeBaseId}/reports")]
         [ClaimRequirement(FunctionCode.CONTENT_REPORT, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostReport(int knowledgeBaseId, [FromBody] ReportCreateRequest request)
         {
             var report = new Report()
@@ -609,7 +615,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfReports = knowledgeBase.NumberOfReports.GetValueOrDefault(0) + 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -622,17 +628,18 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
         }
 
         [HttpPut("{knowledgeBaseId}/reports/{reportId}")]
         [ClaimRequirement(FunctionCode.CONTENT_REPORT, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutReport(int knowledgeBaseId, int reportId, [FromBody] ReportCreateRequest request)
         {
             var report = await _context.Reports.FindAsync(reportId);
             if (report == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             if (report.ReportUserId != User.Identity.Name)
                 return Forbid();
@@ -646,7 +653,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
 
         [HttpDelete("{knowledgeBaseId}/reports/{reportId}")]
@@ -655,14 +662,14 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var report = await _context.Reports.FindAsync(reportId);
             if (report == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             _context.Reports.Remove(report);
 
             var knowledgeBase = await _context.KnowledgeBases.FindAsync(knowledgeBaseId);
             if (knowledgeBase == null)
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
             knowledgeBase.NumberOfReports = knowledgeBase.NumberOfReports.GetValueOrDefault(0) - 1;
             _context.KnowledgeBases.Update(knowledgeBase);
@@ -673,7 +680,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
         #endregion
 
@@ -703,7 +710,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var attachment = await _context.Attachments.FindAsync(attachmentId);
             if (attachment == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             _context.Attachments.Remove(attachment);
 
@@ -713,7 +720,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return Ok();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
         #endregion
     }

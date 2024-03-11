@@ -2,6 +2,7 @@
 using KnowledgeSpace.BackendServer.Constants;
 using KnowledgeSpace.BackendServer.Data;
 using KnowledgeSpace.BackendServer.Data.Entities;
+using KnowledgeSpace.BackendServer.Helpers;
 using KnowledgeSpace.ViewModels;
 using KnowledgeSpace.ViewModels.Contents;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPost]
         [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.CREATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PostCategory([FromBody] CategoryCreateRequest request)
         {
             var category = new Category()
@@ -39,7 +41,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(new ApiBadRequestResponse(""));
             }
         }
 
@@ -101,7 +103,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             var categoryVm = new CategoryVm()
             {
@@ -118,15 +120,16 @@ namespace KnowledgeSpace.BackendServer.Controllers
 
         [HttpPut("{id}")]
         [ClaimRequirement(FunctionCode.CONTENT_CATEGORY, CommandCode.UPDATE)]
+        [ApiValidationFilter]
         public async Task<IActionResult> PutCategory(int id, [FromBody] CategoryCreateRequest request)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             if (id == request.ParentId)
             {
-                return BadRequest("Category cannot be a child itself.");
+                return BadRequest(new ApiBadRequestResponse("Category cannot be a child itself."));
             }
 
             category.Name = category.Name;
@@ -142,7 +145,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
             {
                 return NoContent();
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
 
         [HttpDelete("{id}")]
@@ -151,7 +154,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
-                return NotFound();
+                return NotFound(new ApiNotFoundResponse(""));
 
             _context.Categories.Remove(category);
             var result = await _context.SaveChangesAsync();
@@ -170,7 +173,7 @@ namespace KnowledgeSpace.BackendServer.Controllers
                 };
                 return Ok(categoryvm);
             }
-            return BadRequest();
+            return BadRequest(new ApiBadRequestResponse(""));
         }
     }
 }
