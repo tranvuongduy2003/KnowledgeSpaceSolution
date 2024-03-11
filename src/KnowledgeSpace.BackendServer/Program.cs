@@ -19,7 +19,7 @@ Log.Logger = new LoggerConfiguration()
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddSerilog(Log.Logger);
+builder.Services.AddSerilog((loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(builder.Configuration));
 
 var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
